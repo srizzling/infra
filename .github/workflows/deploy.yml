@@ -31,6 +31,14 @@ jobs:
           envkey_TZ: ${{ secrets.TZ }}
           envkey_USERDIR: ${{ secrets.USERDIR }}
           envkey_LIBRESPEED_PASSWORD: ${{ secrets.LIBRESPEED_PASSWORD }}
+      - name: Add SSH key
+        id: ssh
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          MACHINE_IP="$(tailscale ip -6 $MACHINE)"
+          ssh-keyscan $MACHINE_IP >> ~/.ssh/known_hosts
       - name: 'Docker Deploy'
         id: docker-deploy
         uses: chaplyk/docker-compose-remote-action@v1.1
