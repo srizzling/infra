@@ -91,7 +91,7 @@ services:
     ports:
       - 8083:8083
     networks:
-      - ebooks
+      - traefik_proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.calibre-web.rule=Host(`calibre-web.${DOMAINNAME}`)"
