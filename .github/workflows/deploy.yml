@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3.2.0
+      - name: 'Tailscale'
+        id: tailscale
+        uses: tailscale/github-action@ce41a99162202a647a4b24c30c558a567b926709
+        with:
+          version: 1.32.2
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
@@ -25,12 +31,6 @@ jobs:
           envkey_TZ: ${{ secrets.TZ }}
           envkey_USERDIR: ${{ secrets.USERDIR }}
           envkey_LIBRESPEED_PASSWORD: ${{ secrets.LIBRESPEED_PASSWORD }}
-      - name: 'Tailscale'
-        id: tailscale
-        uses: tailscale/github-action@ce41a99162202a647a4b24c30c558a567b926709
-        with:
-          version: 1.32.2
-          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
       - name: 'Docker Deploy'
         id: docker-deploy
         uses: chaplyk/docker-compose-remote-action@v1.1
