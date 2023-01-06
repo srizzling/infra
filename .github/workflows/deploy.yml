@@ -21,7 +21,7 @@ jobs:
       - name: Deploy
         id: deploy
         if: steps.tailscale.outcome == 'success'
-        run: ssh -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST" 'cd infra && git pull && docker-compose up --force-recreate -d'
+        run: ssh -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST" 'ls & cd /opt/infra && git pull && docker-compose up --force-recreate -d'
         env:
            SSH_HOST: ${{ secrets.SSH_HOST }}
            SSH_USER: ${{ secrets.SSH_USER }}
