@@ -9,6 +9,8 @@ jobs:
     name: 'Deploy to prod'
     environment: Production
     runs-on: ubuntu-22.04
+    env:
+      MACHINE: bowser
     steps:
       - uses: actions/checkout@v3.2.0
       - name: 'Tailscale'
