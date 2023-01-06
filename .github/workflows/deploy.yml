@@ -16,7 +16,7 @@ jobs:
         uses: tailscale/github-action@ce41a99162202a647a4b24c30c558a567b926709
         with:
           version: 1.32.2
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
       - name: 'Docker Deploy'
         id: docker-deploy
         uses: chaplyk/docker-compose-remote-action@v1.1
