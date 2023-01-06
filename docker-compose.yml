@@ -1,0 +1,182 @@
+version: "3"
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    command: --schedule "0 0 6 * * *" --label-enable --cleanup
+  netdata:
+    image: titpetric/netdata
+    container_name: netdata
+    restart: always
+    networks:
+      - traefik_proxy
+    ports:
+      - 19999:19999
+    volumes:
+      - ${USERDIR}/netdata/proc:/host/proc:ro
+      - ${USERDIR}/netdata/sys:/host/sys:ro
+      - ${USERDIR}/netdata/var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.monitor.rule=Host(`monitor.${DOMAINNAME}`)"
+      - "traefik.http.routers.monitor.entrypoints=websecure"
+      - "traefik.http.routers.monitor.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+  nzbhydra:
+    image: ghcr.io/linuxserver/nzbhydra2
+    container_name: nzbhydra
+    hostname: nzbhydra
+    ports:
+      - "5076:5076"
+    volumes:
+      - ${USERDIR}/nzbhydra2:/config
+      - ${USERDIR}/downloads:/downloads
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nzbhydra.rule=Host(`nzbhydra.${DOMAINNAME}`)"
+      - "traefik.http.routers.nzbhydra.entrypoints=websecure"
+      - "traefik.http.routers.nzbhydra.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: always
+    networks:
+      - traefik_proxy
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    restart: always
+    networks:
+      - traefik_proxy
+    ports:
+      - "8989:8989"
+    volumes:
+      - ${USERDIR}/sonarr/config:/config
+      - ${USERDIR}/downloads:/downloads
+      - ${MEDIA_PATH}/tv:/tv
+      - ${MEDIA_PATH_V2}/tv:/tv2
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAINNAME}`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+  radarr:
+    image: ghcr.io/linuxserver/radarr
+    container_name: radarr
+    ports:
+      - "7878:7878"
+    volumes:
+      - ${USERDIR}/radarr/config:/config
+      - ${MEDIA_PATH}/movies:/movies
+      - ${MEDIA_PATH_V2}/movies:/movies2
+      - ${USERDIR}/downloads:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAINNAME}`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: always
+  traefik:
+    image: traefik:v2.2
+    command:
+      - "--accesslog=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=dnsimple"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - /etc/traefik/acme.json:/letsencrypt/acme.json:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    environment:
+      - DNSIMPLE_OAUTH_TOKEN=${DNSIMPLE_OAUTH_TOKEN}
+    networks:
+      - traefik_proxy
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.traefik-rtr.entrypoints=https"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME`)"
+  nzbget:
+    image: ghcr.io/linuxserver/nzbget
+    container_name: nzbget
+    hostname: nzbget
+    ports:
+      - "6789:6789"
+    volumes:
+      - ${USERDIR}/nzbget:/config
+      - ${USERDIR}/downloads:/downloads
+      - ${USERDIR}/incomplete:/incomplete-downloads
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nzbget.rule=Host(`nzbget.${DOMAINNAME}`)"
+      - "traefik.http.routers.nzbget.entrypoints=websecure"
+      - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+    networks:
+      - traefik_proxy
+  librespeed:
+    image: ghcr.io/linuxserver/librespeed
+    container_name: librespeed
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PASSWORD=${LIBRESPEED_PASSWORD}
+    volumes:
+      - ${USERDIR}/librespeed/config:/config
+    ports:
+      - 5678:80
+    restart: always
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.speedtest.rule=Host(`speedtest.${DOMAINNAME}`)"
+      - "traefik.http.routers.speedtest.entrypoints=websecure"
+      - "traefik.http.routers.speedtest.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_proxy
+  default:
+    driver: bridge

@@ -1,0 +1,31 @@
+name: 'Deploy'
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+jobs:
+  deploy:
+    name: 'Deploy to prod'
+    environment: Production
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3.2.0
+      - name: 'Tailscale'
+        id: tailscale
+        uses: tailscale/github-action@ce41a99162202a647a4b24c30c558a567b926709
+        with:
+          version: 1.32.2
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+      - name: 'Docker Deploy'
+        id: docker-deploy
+        uses: chaplyk/docker-compose-remote-action@v1.1
+        with:
+          ssh_host: ${{ secrets.SSH_HOST }}
+          ssh_user: ${{ secrets.SSH_USER }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+          compose_file: docker-compose.yml
+          pull: true
+          build: true
+      - name: Logout
+        run: sudo tailscale logout
