@@ -72,7 +72,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
     ports:
       - 6767:8080
-      - 7878:8081
+      - 4545:8081
     restart: always
     networks:
       - traefik_proxy
