@@ -12,19 +12,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3.2.0
       - name: Make envfile
-         uses: SpicyPizza/create-envfile@v1.3
-         with:
-           envkey_DNSIMPLE_OAUTH_TOKEN: ${{ secrets.DNSIMPLE_OAUTH_TOKEN }}
-           envkey_DOMAINNAME: ${{ secrets.DOMAINNAME }}
-           envkey_LOCAL_IP: ${{ secrets.LOCAL_IP }}
-           envkey_MEDIA_PATH: ${{ secrets.MEDIA_PATH }}
-           envkey_MEDIA_PATH_V2: ${{ secrets.MEDIA_PATH_V2 }}
-           envkey_PGID: ${{ secrets.PGID }}
-           envkey_PIHOLE_PASSWORD: ${{ secrets.PIHOLE_PASSWORD }}
-           envkey_PUID: ${{ secrets.PUID }}
-           envkey_TZ: ${{ secrets.TZ }}
-           envkey_USERDIR: ${{ secrets.USERDIR }}
-           envkey_LIBRESPEED_PASSWORD: ${{ secrets.LIBRESPEED_PASSWORD }}
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DNSIMPLE_OAUTH_TOKEN: ${{ secrets.DNSIMPLE_OAUTH_TOKEN }}
+          envkey_DOMAINNAME: ${{ secrets.DOMAINNAME }}
+          envkey_LOCAL_IP: ${{ secrets.LOCAL_IP }}
+          envkey_MEDIA_PATH: ${{ secrets.MEDIA_PATH }}
+          envkey_MEDIA_PATH_V2: ${{ secrets.MEDIA_PATH_V2 }}
+          envkey_PGID: ${{ secrets.PGID }}
+          envkey_PIHOLE_PASSWORD: ${{ secrets.PIHOLE_PASSWORD }}
+          envkey_PUID: ${{ secrets.PUID }}
+          envkey_TZ: ${{ secrets.TZ }}
+          envkey_USERDIR: ${{ secrets.USERDIR }}
+          envkey_LIBRESPEED_PASSWORD: ${{ secrets.LIBRESPEED_PASSWORD }}
       - name: 'Tailscale'
         id: tailscale
         uses: tailscale/github-action@ce41a99162202a647a4b24c30c558a567b926709
