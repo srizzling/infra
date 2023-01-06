@@ -51,6 +51,53 @@ services:
     restart: always
     networks:
       - traefik_proxy
+  calibre:
+    image: ghcr.io/linuxserver/calibre
+    container_name: calibre
+    hostname: calibre
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${USERDIR}/calibre/config:/config
+      - ${USERDIR}/calibre/upload:/uploads
+      - ${USERDIR}/calibre/plugins:/plugins
+      - ${MEDIA_PATH_V2}/books:/books
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibre.rule=Host(`calibre.${DOMAINNAME}`)"
+      - "traefik.http.routers.calibre.entrypoints=websecure"
+      - "traefik.http.routers.calibre.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - 8081:8081
+    restart: always
+    networks:
+      - traefik_proxy
+  calibre-web:
+    image: ghcr.io/linuxserver/calibre-web
+    container_name: calibre-web
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${USERDIR}/calibre/calibre-web:/config
+      - ${MEDIA_PATH_V2}/books/Calibre Library:/books
+    restart: always
+    depends_on:
+      - calibre
+    ports:
+      - 8083:8083
+    networks:
+      - ebooks
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibre-web.rule=Host(`calibre-web.${DOMAINNAME}`)"
+      - "traefik.http.routers.calibre-web.entrypoints=websecure"
+      - "traefik.http.routers.calibre-web.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
   sonarr:
     image: ghcr.io/linuxserver/sonarr
     container_name: sonarr
