@@ -85,7 +85,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${USERDIR}/calibre/calibre-web:/config
-      - ${MEDIA_PATH_V2}/books/Calibre Library:/books
+      - ${MEDIA_PATH_V2}/books:/books
     restart: always
     depends_on:
       - calibre
