@@ -156,7 +156,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-     - "--certificatesresolvers.myresolver.tailscale=true"
+      - "--certificatesresolvers.myresolver.tailscale=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
