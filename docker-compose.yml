@@ -25,7 +25,7 @@ services:
       - ${USERDIR}/netdata/var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.monitor.rule=Host(`monitor.${DOMAINNAME}`)"
+      - "traefik.http.routers.monitor.rule=Host(`${DOMAINNAME}`) && Path('/monitor')"
       - "traefik.http.routers.monitor.entrypoints=websecure"
       - "traefik.http.routers.monitor.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -44,7 +44,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nzbhydra.rule=Host(`nzbhydra.${DOMAINNAME}`)"
+      - "traefik.http.routers.nzbhydra.rule=Host(`${DOMAINNAME}`) && Path('/nzbhydra')"
       - "traefik.http.routers.nzbhydra.entrypoints=websecure"
       - "traefik.http.routers.nzbhydra.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -66,7 +66,7 @@ services:
       - ${MEDIA_PATH_V2}/books:/books
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.calibre.rule=Host(`calibre.${DOMAINNAME}`)"
+      - "traefik.http.routers.calibre.rule=Host(`${DOMAINNAME}`) & Path('/books')"
       - "traefik.http.routers.calibre.entrypoints=websecure"
       - "traefik.http.routers.calibre.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -95,7 +95,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.calibre-web.rule=Host(`calibre-web.${DOMAINNAME}`)"
+      - "traefik.http.routers.calibre-web.rule=Host(`${DOMAINNAME}`) && Path('/books-web')"
       - "traefik.http.routers.calibre-web.entrypoints=websecure"
       - "traefik.http.routers.calibre-web.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -119,7 +119,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAINNAME}`)"
+      - "traefik.http.routers.sonarr.rule=Host(`${DOMAINNAME}`) && Path('/sonarr')"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -142,13 +142,13 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAINNAME}`)"
+      - "traefik.http.routers.radarr.rule=Host(`${DOMAINNAME}`) && Path('/radarr')"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
     restart: always
   traefik:
-    image: traefik:v2.2
+    image: traefik/traefik
     command:
       - "--accesslog=true"
       - "--api.insecure=true"
@@ -156,18 +156,13 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=dnsimple"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+     - "--certificatesresolvers.myresolver.tailscale=true"
     volumes:
-      - /etc/traefik/acme.json:/letsencrypt/acme.json:rw
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
-    environment:
-      - DNSIMPLE_OAUTH_TOKEN=${DNSIMPLE_OAUTH_TOKEN}
     networks:
       - traefik_proxy
     restart: always
@@ -178,7 +173,7 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.traefik-rtr.entrypoints=https"
-      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME`)"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`$DOMAINNAME`)"
   nzbget:
     image: ghcr.io/linuxserver/nzbget
     container_name: nzbget
@@ -195,7 +190,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nzbget.rule=Host(`nzbget.${DOMAINNAME}`)"
+      - "traefik.http.routers.nzbget.rule=Host(`${DOMAINNAME}`) && Path('/nzbget')"
       - "traefik.http.routers.nzbget.entrypoints=websecure"
       - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -218,7 +213,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.speedtest.rule=Host(`speedtest.${DOMAINNAME}`)"
+      - "traefik.http.routers.speedtest.rule=Host(`${DOMAINNAME}`) && Path('/speedtest')"
       - "traefik.http.routers.speedtest.entrypoints=websecure"
       - "traefik.http.routers.speedtest.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
