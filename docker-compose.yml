@@ -159,6 +159,7 @@ services:
       - "--certificatesresolvers.myresolver.tailscale=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
     ports:
       - "80:80"
       - "443:443"
