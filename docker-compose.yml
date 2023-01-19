@@ -142,7 +142,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`${DOMAINNAME}`) && PathPrefixStrip(`/radarr`)"
+      - "traefik.http.routers.radarr.rule=(Host(`${DOMAINNAME}`) && PathPrefix(`/radarr`) || PathPrefix(`/radarr`))"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
