@@ -148,7 +148,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
     restart: always
   traefik:
-    image: traefik
+    image: traefik:v3.0
     command:
       - "--accesslog=true"
       - "--api.insecure=true"
