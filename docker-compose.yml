@@ -11,6 +11,19 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     command: --schedule "0 0 6 * * *" --label-enable --cleanup
+  autok3s:
+    image: cnrancher/autok3s:latest
+    container_name: autok3s
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.autok3s.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/autok3s`)"
+      - "traefik.http.routers.autok3s.entrypoints=websecure"
+      - "traefik.http.routers.autok3s.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
   netdata:
     image: titpetric/netdata
     container_name: netdata
