@@ -24,7 +24,7 @@ services:
       - AUTOK3S_CONFIG=$HOME/.autok3s/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.autok3s.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/autok3s`)"
+      - "traefik.http.routers.autok3s.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/autok3s`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/autok3s`))"
       - "traefik.http.routers.autok3s.entrypoints=websecure"
       - "traefik.http.services.<service_name>.loadbalancer.server.port=5656"
       - "traefik.http.routers.autok3s.tls.certresolver=myresolver"
@@ -40,10 +40,10 @@ services:
     volumes:
       - ${USERDIR}/netdata/proc:/host/proc:ro
       - ${USERDIR}/netdata/sys:/host/sys:ro
-      - ${USERDIR}/netdata/var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.monitor.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/monitor`)"
+      - "traefik.http.routers.monitor.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/monitor`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/monitor`))"
       - "traefik.http.routers.monitor.entrypoints=websecure"
       - "traefik.http.routers.monitor.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -62,86 +62,13 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nzbhydra.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/nzbhydra`)"
+      - "traefik.http.routers.nzbhydra.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/nzbhydra`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/nzbhydra`))"
       - "traefik.http.routers.nzbhydra.entrypoints=websecure"
       - "traefik.http.routers.nzbhydra.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
     restart: always
     networks:
       - traefik_proxy
-  calibre:
-    image: ghcr.io/linuxserver/calibre
-    container_name: calibre
-    hostname: calibre
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - SUBFOLDER=/books/
-    volumes:
-      - ${USERDIR}/calibre/config:/config
-      - ${USERDIR}/calibre/upload:/uploads
-      - ${USERDIR}/calibre/plugins:/plugins
-      - ${USERDIR}/books:/books
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.calibre.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/books`)"
-      - "traefik.http.routers.calibre.entrypoints=websecure"
-      - "traefik.http.routers.calibre.tls.certresolver=myresolver"
-      - "traefik.http.services.calibre.loadbalancer.server.port=8080"
-      - "com.centurylinklabs.watchtower.enable=true"
-    ports:
-      - 6767:8080
-      - 4545:8081
-    restart: always
-    networks:
-      - traefik_proxy
-  calibre-web:
-    image: ghcr.io/linuxserver/calibre-web
-    container_name: calibre-web
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - SUBFOLDER=/calibre-web/
-    volumes:
-      - ${USERDIR}/calibre/calibre-web:/config
-      - ${USERDIR}/books:/books
-    restart: always
-    depends_on:
-      - calibre
-    ports:
-      - 8083:8083
-    networks:
-      - traefik_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.calibre-web.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/books-web`)"
-      - "traefik.http.routers.calibre-web.entrypoints=websecure"
-      - "traefik.http.routers.calibre-web.tls.certresolver=myresolver"
-      - "com.centurylinklabs.watchtower.enable=true"
-  readarr:
-    image: ghcr.io/linuxserver/readarr:nightly
-    container_name: readarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${USERDIR}/readarr/config:/config
-      - ${USERDIR}/books:/books
-      - ${USERDIR}/downloads:/downloads
-    ports:
-      - 8787:8787
-    restart: unless-stopped
-    networks:
-      - traefik_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.readarr.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/readarr`)"
-      - "traefik.http.routers.readarr.entrypoints=websecure"
-      - "traefik.http.routers.readarr.tls.certresolver=myresolver"
-      - "com.centurylinklabs.watchtower.enable=true"
   sonarr:
     image: ghcr.io/linuxserver/sonarr
     container_name: sonarr
@@ -185,7 +112,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=(Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/radarr`))"
+      - "traefik.http.routers.radarr.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/radarr`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/radarr`))"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -217,7 +144,7 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.traefik-rtr.entrypoints=https"
-      - "traefik.http.routers.traefik-rtr.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`)"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`${BASE_DOMAINNAME}`)"
       - "traefik.http.middlewares.autodetect.contenttype.autodetect=false"
   nzbget:
     image: ghcr.io/linuxserver/nzbget
@@ -235,7 +162,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nzbget.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/nzbget`)"
+      - "traefik.http.routers.nzbget.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/nzbget`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/nzbget`))"
       - "traefik.http.routers.nzbget.entrypoints=websecure"
       - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -258,7 +185,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.speedtest.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/speedtest`)"
+      - "traefik.http.routers.speedtest.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/speedtest`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/speedtest`))"
       - "traefik.http.routers.speedtest.entrypoints=websecure"
       - "traefik.http.routers.speedtest.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
