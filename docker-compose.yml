@@ -20,7 +20,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.autok3s.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/autok3s`)"
+      - "traefik.http.routers.autok3s.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/autok3s`)"
       - "traefik.http.routers.autok3s.entrypoints=websecure"
       - "traefik.http.routers.autok3s.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -38,7 +38,7 @@ services:
       - ${USERDIR}/netdata/var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.monitor.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/monitor`)"
+      - "traefik.http.routers.monitor.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/monitor`)"
       - "traefik.http.routers.monitor.entrypoints=websecure"
       - "traefik.http.routers.monitor.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -57,7 +57,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nzbhydra.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/nzbhydra`)"
+      - "traefik.http.routers.nzbhydra.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/nzbhydra`)"
       - "traefik.http.routers.nzbhydra.entrypoints=websecure"
       - "traefik.http.routers.nzbhydra.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -80,7 +80,7 @@ services:
       - ${USERDIR}/books:/books
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.calibre.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/books`)"
+      - "traefik.http.routers.calibre.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/books`)"
       - "traefik.http.routers.calibre.entrypoints=websecure"
       - "traefik.http.routers.calibre.tls.certresolver=myresolver"
       - "traefik.http.services.calibre.loadbalancer.server.port=8080"
@@ -111,7 +111,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.calibre-web.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/books-web`)"
+      - "traefik.http.routers.calibre-web.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/books-web`)"
       - "traefik.http.routers.calibre-web.entrypoints=websecure"
       - "traefik.http.routers.calibre-web.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -133,7 +133,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.readarr.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/readarr`)"
+      - "traefik.http.routers.readarr.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/readarr`)"
       - "traefik.http.routers.readarr.entrypoints=websecure"
       - "traefik.http.routers.readarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -157,7 +157,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/sonarr`)"
+      - "traefik.http.routers.sonarr.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/sonarr`)"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -180,7 +180,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=(Host(`${DOMAINNAME}`) && PathPrefix(`/radarr`))"
+      - "traefik.http.routers.radarr.rule=(Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/radarr`))"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -230,7 +230,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nzbget.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/nzbget`)"
+      - "traefik.http.routers.nzbget.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/nzbget`)"
       - "traefik.http.routers.nzbget.entrypoints=websecure"
       - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -253,7 +253,7 @@ services:
       - traefik_proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.speedtest.rule=Host(`${DOMAINNAME}`) && PathPrefix(`/speedtest`)"
+      - "traefik.http.routers.speedtest.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/speedtest`)"
       - "traefik.http.routers.speedtest.entrypoints=websecure"
       - "traefik.http.routers.speedtest.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
