@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     network_mode: host
     ports:
-      - 8080
+      - "5656:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - $HOME/.autok3s/:$HOME/.autok3s/
@@ -162,7 +162,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/sonarr`)"
+      - "traefik.http.routers.sonarr.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/sonarr`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/sonarr`))
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
