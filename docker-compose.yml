@@ -15,7 +15,6 @@ services:
     image: cnrancher/autok3s:latest
     container_name: autok3s
     restart: unless-stopped
-    #network_mode: host
     ports:
       - "5656:8080"
     volumes:
@@ -27,6 +26,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.autok3s.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/autok3s`)"
       - "traefik.http.routers.autok3s.entrypoints=websecure"
+      - "traefik.http.services.<service_name>.loadbalancer.server.port=5656"
       - "traefik.http.routers.autok3s.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
   netdata:
@@ -162,7 +162,7 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/sonarr`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/sonarr`))
+      - "traefik.http.routers.sonarr.rule=(Host(`${BASE_DOMAINNAME}`) && PathPrefix(`/sonarr`)) || (Host(`${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/sonarr`))"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
