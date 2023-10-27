@@ -215,7 +215,7 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.traefik-rtr.entrypoints=https"
-      - "traefik.http.routers.traefik-rtr.rule=Host(`$DOMAINNAME`)"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`)"
       - "traefik.http.middlewares.autodetect.contenttype.autodetect=false"
   nzbget:
     image: ghcr.io/linuxserver/nzbget
