@@ -17,7 +17,10 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - $HOME/.autok3s/:$HOME/.autok3s/
+    environment:
+      - AUTOK3S_CONFIG=$HOME/.autok3s/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.autok3s.rule=Host(`${BASE_DOMAINNAME}`, `${SHORTHAND_DOMAINNAME}`) && PathPrefix(`/autok3s`)"
